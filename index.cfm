@@ -24,25 +24,15 @@
             src = "#variables.path#" 
             excludeHeaderRow = true
             query = "queryData"
+            headerrow="1"
         >
-        
         <cfinvoke component="components.xldata" method="xlfileRead" returnvariable="results" data="#queryData#">
     <cfelse>
         <cfset variables.message.errormsg = 'upload a excel file' />
-    </cfif>
-<!--- <cfspreadsheet    
-    action="read" 
-    src = "filepath" 
-    columns = "range" 
-    columnnames = "comma-delimited list" 
-    excludeHeaderRow = "true | false" 
-    format = "CSV|HTML" 
-    headerrow = "row number" 
-    name = "text" 
-    query = "query name" 
-    rows = "range" 
-    sheet = "number" 
-    sheetname = "text">  --->   
+    </cfif> 
+</cfif>
+<cfif structKeyExists(form, "download_data")>
+    <cfinvoke component="components.xldata" method="downloadWithData" returnvariable="xlsdownload">
 </cfif>
     <div class="container">
         <div class="row">
@@ -52,9 +42,9 @@
             <div class="col mt-4">
                 <div class="row">
                     <div class="col">
-                        <form>
+                        <form action="" method="post">
                             <a href="plain_template.cfm" class="btn btn-primary" >Plain Template</a>
-                            <button type="submit" class="btn btn-secondary">Template with data</button>
+                            <button type="submit" class="btn btn-secondary" name="download_data">Template with data</button>
                         </form>
                     </div>
                     <div class="col">
