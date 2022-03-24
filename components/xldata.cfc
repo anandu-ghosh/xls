@@ -17,8 +17,8 @@ component{
         local.check_sheet_rows   = checkSheetColumns(data);
         if(local.check_sheet_rows === false){
             local.sheetData =queryNew("FirstName,LastName,Address,Email,Phone,DOB,Role,Result");
-            local.sheetDatasucess =queryNew("FirstName,LastName,Address,Email,Phone,DOB,Role,Result");
             for(row in data){
+                queryAddRow(local.sheetData);
                 local.nullMessage =[];
                 if(row["First Name"] != '' || row["Last Name"] != '' || row["Address"] != '' || row["Email"] != '' || row["Phone"] != '' || row["DOB"] != '' || row["Role"] != ''){
                     if(row["First Name"] === '' || row["Last Name"] === '' || row["Address"] === '' || row["Email"] === '' || row["Phone"] === '' || row["DOB"] === '' || row["Role"] === ''){
@@ -45,7 +45,6 @@ component{
                             local.nullMessage[7] = 'Role missing';
                         }
                         local.endresult = arrayToList(local.nullMessage)
-                        queryAddRow(local.sheetData);
                         querySetCell(local.sheetData, "FirstName", row["First Name"]);
                         querySetCell(local.sheetData, "LastName", row["Last Name"]);
                         querySetCell(local.sheetData, "Address", row["Address"]);
@@ -55,7 +54,6 @@ component{
                         querySetCell(local.sheetData, "Role", row["Role"]);
                         querySetCell(local.sheetData, "Result", local.endresult);
                     }else{
-                        queryAddRow(local.sheetData);
                         querySetCell(local.sheetData, "FirstName", row["First Name"]);
                         querySetCell(local.sheetData, "LastName", row["Last Name"]);
                         querySetCell(local.sheetData, "Address", row["Address"]);
@@ -68,8 +66,8 @@ component{
                 }
             }
             local.mySheet = SpreadsheetNew();
-            spreadSheetAddRow(local.mySheet,"First Name,Last Name,Address,Email,Phone,DOB,Role,Result");
-            spreadsheetAddRows(local.mySheet, local.sheetData);
+            SpreadSheetAddRow(local.mySheet,"First Name,Last Name,Address,Email,Phone,DOB,Role,Result");
+            spreadsheetAddRows(local.mySheet,local.sheetData);
             cfheader( name="Content-Disposition", value="attachment;filename=Upload_result.xls" );
             cfcontent( variable=SpreadSheetReadBinary(local.mySheet), type="application/msexcel" );
         }else if(local.check_sheet_rows === true){
@@ -82,11 +80,11 @@ component{
                     });
                     local.userrole = listToArray(row["Role"]);
                     for(ros in userrole){
-                    if(ArrayContains(roles,ros) === false){
-                        local.roleStatus = false
-                    }else{
-                        local.roleStatus = true
-                    }
+                        if(ArrayContains(roles,ros) === false){
+                            local.roleStatus = false
+                        }else{
+                            local.roleStatus = true
+                        }
                     }
                     if(local.emailCheck.RecordCount > 0){
                         if(local.roleStatus === false){
