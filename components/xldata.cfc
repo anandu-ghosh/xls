@@ -16,36 +16,60 @@ component{
     function xlfileRead(data){
         local.check_sheet_rows   = checkSheetColumns(data);
         if(local.check_sheet_rows === false){
-            local.mySheet = SpreadsheetNew();
-            SpreadSheetAddRow(local.mySheet,"First Name,Last Name,Address,Email,Phone,DOB,Role,Result");
+            local.sheetData =queryNew("FirstName,LastName,Address,Email,Phone,DOB,Role,Result");
+            local.sheetDatasucess =queryNew("FirstName,LastName,Address,Email,Phone,DOB,Role,Result");
             for(row in data){
                 local.nullMessage =[];
                 if(row["First Name"] != '' || row["Last Name"] != '' || row["Address"] != '' || row["Email"] != '' || row["Phone"] != '' || row["DOB"] != '' || row["Role"] != ''){
-                    if(row["First Name"] === ''){
-                        local.nullMessage[1] = 'First Name missing';
+                    if(row["First Name"] === '' || row["Last Name"] === '' || row["Address"] === '' || row["Email"] === '' || row["Phone"] === '' || row["DOB"] === '' || row["Role"] === ''){
+
+                        if(row["First Name"] === ''){
+                            local.nullMessage[1] = 'First Name missing';
+                        }
+                        if(row["Last Name"] === ''){
+                            local.nullMessage[2] = 'Second Name missing';
+                        }
+                        if(row["Address"] === ''){
+                            local.nullMessage[3] = 'Address missing';
+                        }
+                        if(row["Email"] === ''){
+                            local.nullMessage[4] = 'Email missing';
+                        }
+                        if(row["Phone"] === ''){
+                            local.nullMessage[5] = 'Phone missing';
+                        }
+                        if(row["DOB"] === ''){
+                            local.nullMessage[6] = 'DOB missing';
+                        }
+                        if(row["Role"] === ''){
+                            local.nullMessage[7] = 'Role missing';
+                        }
+                        local.endresult = arrayToList(local.nullMessage)
+                        queryAddRow(local.sheetData);
+                        querySetCell(local.sheetData, "FirstName", row["First Name"]);
+                        querySetCell(local.sheetData, "LastName", row["Last Name"]);
+                        querySetCell(local.sheetData, "Address", row["Address"]);
+                        querySetCell(local.sheetData, "Email", row["Email"]);
+                        querySetCell(local.sheetData, "Phone", row["Phone"]);
+                        querySetCell(local.sheetData, "DOB", row["DOB"]);
+                        querySetCell(local.sheetData, "Role", row["Role"]);
+                        querySetCell(local.sheetData, "Result", local.endresult);
+                    }else{
+                        queryAddRow(local.sheetData);
+                        querySetCell(local.sheetData, "FirstName", row["First Name"]);
+                        querySetCell(local.sheetData, "LastName", row["Last Name"]);
+                        querySetCell(local.sheetData, "Address", row["Address"]);
+                        querySetCell(local.sheetData, "Email", row["Email"]);
+                        querySetCell(local.sheetData, "Phone", row["Phone"]);
+                        querySetCell(local.sheetData, "DOB", row["DOB"]);
+                        querySetCell(local.sheetData, "Role", row["Role"]);
+                        querySetCell(local.sheetData, "Result", 'Sucess');
                     }
-                    if(row["Last Name"] === ''){
-                        local.nullMessage[2] = 'Second Name missing';
-                    }
-                    if(row["Address"] === ''){
-                        local.nullMessage[3] = 'Address missing';
-                    }
-                    if(row["Email"] === ''){
-                        local.nullMessage[4] = 'Email missing';
-                    }
-                    if(row["Phone"] === ''){
-                        local.nullMessage[5] = 'Phone missing';
-                    }
-                    if(row["DOB"] === ''){
-                        local.nullMessage[6] = 'DOB missing';
-                    }
-                    if(row["Role"] === ''){
-                        local.nullMessage[7] = 'Role missing';
-                    }
-                    local.endresult = arrayToList(local.nullMessage, " ")
-                    SpreadSheetAddRow(local.mySheet,'#row["First Name"]#,#row["Last Name"]#,#row["Address"]#,#row["Email"]#,#row["Phone"]#,#row["DOB"]#,#row["Role"]#,#local.endresult#');
                 }
             }
+            local.mySheet = SpreadsheetNew();
+            spreadSheetAddRow(local.mySheet,"First Name,Last Name,Address,Email,Phone,DOB,Role,Result");
+            spreadsheetAddRows(local.mySheet, local.sheetData);
             cfheader( name="Content-Disposition", value="attachment;filename=Upload_result.xls" );
             cfcontent( variable=SpreadSheetReadBinary(local.mySheet), type="application/msexcel" );
         }else if(local.check_sheet_rows === true){
@@ -103,11 +127,12 @@ component{
         for(row in data){
             if(row["First Name"] != '' || row["Last Name"] != '' || row["Address"] != '' || row["Email"] != '' || row["Phone"] != '' || row["DOB"] != '' || row["Role"] != ''){
                 if(row["First Name"] === '' || row["Last Name"] === '' || row["Address"] === '' || row["Email"] === '' || row["Phone"] === '' || row["DOB"] === '' || row["Role"] === ''){
-                    return false;
+                    local.result = false;
                 }else{
-                     return true;
+                     local.result = true;
                 }
             }
         }
+        return local.result;
     }
 }
