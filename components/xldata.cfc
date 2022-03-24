@@ -49,35 +49,53 @@ component{
             cfheader( name="Content-Disposition", value="attachment;filename=Upload_result.xls" );
             cfcontent( variable=SpreadSheetReadBinary(local.mySheet), type="application/msexcel" );
         }else if(local.check_sheet_rows === true){
-            local.rols = queryExecute("SELECT role FROM role");
+            local.role = queryExecute("SELECT role FROM role");
+            local.roles = ValueArray(local.role,"role");
             for(row in data){
-                local.emailCheck = queryExecute("SELECT email FROM user WHERE email = :email;",{ 
-                    email : { cfsqltype: "cf_sql_varchar", value: row["Email"]} 
-                });
-                if(local.emailCheck.RecordCount > 0){
-                    writeDump(local.rols)
-                    queryExecute("UPDATE user SET firstname = :firstname, lastname= :lastname, address= :address,phone= :phone, dob= :dob,role = :role WHERE email = :email;",{
-                        firstname: { cfsqltype: "cf_sql_varchar", value: row["First Name"] },
-                        lastname: { cfsqltype: "cf_sql_varchar", value: row["Last Name"] },
-                        address: { cfsqltype: "cf_sql_varchar", value: row["Address"] },
-                        phone: { cfsqltype: "cf_sql_varchar", value: row["Phone"] },
-                        dob: { cfsqltype: "cf_sql_varchar", value: DateFormat(row["DOB"],"yyy-mm-dd") },
-                        role: { cfsqltype: "cf_sql_varchar", value: row["Role"] },
-                        email: { cfsqltype: "cf_sql_varchar", value: row["Email"]}
-                    });  
-                    
-                }else{
-                    queryExecute("insert into user(firstname,lastname,address,email,phone,dob,role)values( :firstname, :lastname, :address, :email, :phone, :dob, :role )",{
-                        firstname: { cfsqltype: "cf_sql_varchar", value: row["First Name"] },
-                        lastname: { cfsqltype: "cf_sql_varchar", value: row["Last Name"] },
-                        address: { cfsqltype: "cf_sql_varchar", value: row["Address"] },
-                        email: { cfsqltype: "cf_sql_varchar", value: row["Email"] },
-                        phone: { cfsqltype: "cf_sql_varchar", value: row["Phone"] },
-                        dob: { cfsqltype: "cf_sql_varchar", value: DateFormat(row["DOB"],"yyy-mm-dd") },
-                        role: { cfsqltype: "cf_sql_varchar", value: row["Role"] }
+                if(row["First Name"] != '' || row["Last Name"] != '' || row["Address"] != '' || row["Email"] != '' || row["Phone"] != '' || row["DOB"] != '' || row["Role"] != ''){
+                    local.emailCheck = queryExecute("SELECT email FROM user WHERE email = :email;",{ 
+                        email : { cfsqltype: "cf_sql_varchar", value: row["Email"]} 
                     });
-                }
+                    local.userrole = listToArray(row["Role"]);
+                    for(ros in userrole){
+                    if(ArrayContains(roles,ros) === false){
+                        local.roleStatus = false
+                    }else{
+                        local.roleStatus = true
+                    }
+                    }
+                    if(local.emailCheck.RecordCount > 0){
+                        if(local.roleStatus === false){
+                            return 'role_error';
+                        }else{
+                            queryExecute("UPDATE user SET firstname = :firstname, lastname= :lastname, address= :address,phone= :phone, dob= :dob,role = :role WHERE email = :email;",{
+                                firstname: { cfsqltype: "cf_sql_varchar", value: row["First Name"] },
+                                lastname: { cfsqltype: "cf_sql_varchar", value: row["Last Name"] },
+                                address: { cfsqltype: "cf_sql_varchar", value: row["Address"] },
+                                phone: { cfsqltype: "cf_sql_varchar", value: row["Phone"] },
+                                dob: { cfsqltype: "cf_sql_varchar", value: DateFormat(row["DOB"],"yyy-mm-dd") },
+                                role: { cfsqltype: "cf_sql_varchar", value: row["Role"] },
+                                email: { cfsqltype: "cf_sql_varchar", value: row["Email"]}
+                            });
+                        }
+                    }else{
+                        if(local.roleStatus === false){
+                            return 'role_error';
+                        }else{
+                            queryExecute("insert into user(firstname,lastname,address,email,phone,dob,role)values( :firstname, :lastname, :address, :email, :phone, :dob, :role )",{
+                                firstname: { cfsqltype: "cf_sql_varchar", value: row["First Name"] },
+                                lastname: { cfsqltype: "cf_sql_varchar", value: row["Last Name"] },
+                                address: { cfsqltype: "cf_sql_varchar", value: row["Address"] },
+                                email: { cfsqltype: "cf_sql_varchar", value: row["Email"] },
+                                phone: { cfsqltype: "cf_sql_varchar", value: row["Phone"] },
+                                dob: { cfsqltype: "cf_sql_varchar", value: DateFormat(row["DOB"],"yyy-mm-dd") },
+                                role: { cfsqltype: "cf_sql_varchar", value: row["Role"] }
+                            });
+                        }
+                    }
+                }    
             }
+            return 'success';
         }
     }
 

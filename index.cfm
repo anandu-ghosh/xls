@@ -27,8 +27,16 @@
             headerrow="1"
         >
         <cfinvoke component="components.xldata" method="xlfileRead" returnvariable="results" data="#queryData#">
+        <cfif results eq 'success'>
+            <cfset variables.message.status = 'success'/>
+            <cfset variables.message.datas = 'Successfully completed the operation' />
+        <cfelseif results eq 'role_error'>
+            <cfset variables.message.status = 'error'/>
+            <cfset variables.message.datas = 'The role is not valid' />
+        </cfif>
     <cfelse>
-        <cfset variables.message.errormsg = 'upload a excel file' />
+        <cfset variables.message.status = 'error'/>
+        <cfset variables.message.datas = 'Upload a excel file' />
     </cfif> 
 </cfif>
 <cfif structKeyExists(form, "download_data")>
@@ -38,7 +46,20 @@
         <div class="row">
             <div class="col-12 text-center">
                 <h2>User Details</h2>
-            </div>
+                <cfif structKeyExists(message, "status")>
+                    <cfif variables.message.status eq "error">
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Danger!</strong><cfoutput> #variables.message.datas#</cfoutput>.
+                        </div>
+                    <cfelseif variables.message.status eq "success">
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Success!</strong><cfoutput> #variables.message.datas#</cfoutput>.
+                        </div>
+                    </cfif>
+                </cfif>
+            </div>  
             <div class="col mt-4">
                 <div class="row">
                     <div class="col">
@@ -89,7 +110,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </div>    
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
