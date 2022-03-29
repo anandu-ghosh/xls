@@ -103,7 +103,7 @@
                                 <td>#listData.email#</td>
                                 <td>#listData.phone#</td>
                                 <td>#listData.dob#</td>
-                                <td>#listData.role#</td> 
+                                <td>#listData.roles#</td> 
                             </tr>
                         </cfoutput>    
                     </tbody>
