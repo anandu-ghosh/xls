@@ -17,9 +17,9 @@ component{
         local.check_sheet_rows   = checkSheetColumns(data);
         if(local.check_sheet_rows === false){
             local.sheetData = uploadFailDataCreate(data);
-            local.mySheet = SpreadsheetNew();
             local.sheet = queryNew("FirstName,LastName,Address,Email,Phone,DOB,Role,Result");
             for(rows in local.sheetData){
+                queryAddRow(local.sheet);
                 querySetCell(local.sheet, "FirstName", rows["FirstName"]);
                 querySetCell(local.sheet, "LastName", rows["LastName"]);
                 querySetCell(local.sheet, "Address", rows["Address"]);
@@ -27,9 +27,9 @@ component{
                 querySetCell(local.sheet, "Phone", rows["Phone"]);
                 querySetCell(local.sheet, "DOB", rows["DOB"]);
                 querySetCell(local.sheet, "Role", rows["Role"]);
-                querySetCell(local.sheet, "Result", rows["Result"]);
+                querySetCell(local.sheet, "Result", rows["Result"]); 
             }
-
+            local.mySheet = SpreadsheetNew();
             SpreadSheetAddRow(local.mySheet,"First Name,Last Name,Address,Email,Phone,DOB,Role,Result");
             spreadsheetAddRows(local.mySheet,local.sheet);
             cfheader( name="Content-Disposition", value="attachment;filename=Upload_result.xls" );
